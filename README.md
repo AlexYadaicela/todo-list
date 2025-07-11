@@ -12,7 +12,7 @@ To-Do application to maintain a daily routine.
 
 1. **Download the project files**
    - Download the project files as a ZIP archive and extract them to a folder on your computer.
-     \*Alternatively, clone the repository using HTTPS `https://github.com/AlexYadaicela/todo-list.git`.
+   - Alternatively, clone the repository using HTTPS `https://github.com/AlexYadaicela/todo-list.git`.
 
 2. **Development and Build (using Vite CLI):**
    - **Install Node.js and npm**
