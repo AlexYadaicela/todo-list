@@ -20,7 +20,7 @@ function App() {
       return todo;
     });
 
-    setTodoList([updatedTodos]);
+    setTodoList(updatedTodos);
   };
 
   return (
