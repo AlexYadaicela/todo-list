@@ -4,7 +4,7 @@ import TodoForm from './features/TodoForm';
 import * as React from 'react';
 
 function App() {
-  const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_TABLE}`;
+  const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
   const token = `Bearer ${import.meta.env.VITE_PAT}`;
 
   const [isLoading, setIsLoading] = React.useState(false);
@@ -81,22 +81,6 @@ function App() {
       body: JSON.stringify(payload),
     };
 
-    try {
-      const response = await fetch(url, options);
-      if (!response.ok) throw new Error(`Reponse Status: ${response.status}`);
-    } catch (error) {
-      console.error(error.message);
-      setErrorMessage(`${error.message}. Reverting todo...`);
-      const revertedTodos = todoList.map((todo) => {
-        if (todo.id === todoID) {
-          return originalTodo;
-        }
-        return todo;
-      });
-      setTodoList(revertedTodos);
-    }
-
-    console.log('helper function working');
     const updatedTodos = todoList.map((todo) => {
       if (todo.id === todoID) {
         return { ...todo, isCompleted: true };
@@ -105,6 +89,16 @@ function App() {
     });
 
     setTodoList(updatedTodos);
+
+    try {
+      const response = await fetch(url, options);
+      if (!response.ok) throw new Error(`Reponse Status: ${response.status}`);
+    } catch (error) {
+      console.error(error.message);
+      setErrorMessage(`${error.message}. Reverting todo...`);
+      const revertedTodos = [...updatedTodos, originalTodo];
+      setTodoList(revertedTodos);
+    }
   };
 
   const updateTodo = async (editedTodo) => {
@@ -132,17 +126,13 @@ function App() {
     };
 
     try {
+      setIsSaving(true);
       const response = await fetch(url, options);
       if (!response.ok) throw new Error(`Response Status ${response.status}`);
     } catch (error) {
       console.error(error.message);
       setErrorMessage(`${error.message}. Reverting todo...`);
-      const revertedTodos = todoList.map((todo) => {
-        if (todo.id === editedTodo.id) {
-          return originalTodo;
-        }
-        return todo;
-      });
+      const revertedTodos = [...todoList, originalTodo];
       setTodoList(revertedTodos);
     } finally {
       setIsSaving(false);
@@ -171,7 +161,7 @@ function App() {
       try {
         const response = await fetch(url, options);
         if (!response.ok) {
-          throw new Error(`Response status: ${response.message}`);
+          throw new Error(`Response status: ${response.status}`);
         }
         const { records } = await response.json();
         console.log(records);
