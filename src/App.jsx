@@ -40,7 +40,7 @@ function App() {
     try {
       setIsSaving(true);
       const response = await fetch(url, options);
-      if (!response.ok) throw new Error(response.message);
+      if (!response.ok) throw new Error(`Response Status ${response.message}`);
       const { records } = await response.json();
       const savedTodo = {
         id: records[0].fields.id,
@@ -58,7 +58,44 @@ function App() {
     }
   };
 
-  const completeTodo = (todoID) => {
+  const completeTodo = async (todoID) => {
+    const originalTodo = todoList.find((todo) => todo.id === todoID);
+
+    const payload = {
+      records: [
+        {
+          id: todoID,
+          fields: {
+            isCompleted: true,
+          },
+        },
+      ],
+    };
+
+    const options = {
+      method: 'PATCH',
+      headers: {
+        Authorization: `${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    };
+
+    try {
+      const response = await fetch(url, options);
+      if (!response.ok) throw new Error(`Reponse Status: ${response.status}`);
+    } catch (error) {
+      console.error(error.message);
+      setErrorMessage(`${error.message}. Reverting todo...`);
+      const revertedTodos = todoList.map((todo) => {
+        if (todo.id === todoID) {
+          return originalTodo;
+        }
+        return todo;
+      });
+      setTodoList(revertedTodos);
+    }
+
     console.log('helper function working');
     const updatedTodos = todoList.map((todo) => {
       if (todo.id === todoID) {
@@ -70,7 +107,47 @@ function App() {
     setTodoList(updatedTodos);
   };
 
-  const updateTodo = (editedTodo) => {
+  const updateTodo = async (editedTodo) => {
+    const originalTodo = todoList.find((todo) => todo.id === editedTodo.id);
+
+    const payload = {
+      records: [
+        {
+          id: editedTodo.id,
+          fields: {
+            title: editedTodo.title,
+            isCompleted: editedTodo.isCompleted,
+          },
+        },
+      ],
+    };
+
+    const options = {
+      method: 'PATCH',
+      headers: {
+        Authorization: `${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    };
+
+    try {
+      const response = await fetch(url, options);
+      if (!response.ok) throw new Error(`Response Status ${response.status}`);
+    } catch (error) {
+      console.error(error.message);
+      setErrorMessage(`${error.message}. Reverting todo...`);
+      const revertedTodos = todoList.map((todo) => {
+        if (todo.id === editedTodo.id) {
+          return originalTodo;
+        }
+        return todo;
+      });
+      setTodoList(revertedTodos);
+    } finally {
+      setIsSaving(false);
+    }
+
     const updatedTodos = todoList.map((todo) => {
       if (todo.id === editedTodo.id) {
         return { ...editedTodo };
