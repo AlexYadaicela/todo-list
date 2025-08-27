@@ -4,16 +4,58 @@ import TodoForm from './features/TodoForm';
 import * as React from 'react';
 
 function App() {
-  const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
+  const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_TABLE}`;
   const token = `Bearer ${import.meta.env.VITE_PAT}`;
 
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [todoList, setTodoList] = React.useState([]);
+  const [isSaving, setIsSaving] = React.useState(false);
 
-  const addTodo = (title) => {
-    const newTodo = { title: `${title}`, id: Date.now(), isCompleted: false };
-    setTodoList([...todoList, newTodo]);
+  const addTodo = async (newTodo) => {
+    console.log(newTodo);
+
+    const payload = {
+      records: [
+        {
+          fields: {
+            title: newTodo,
+            isCompleted: false,
+          },
+        },
+      ],
+    };
+
+    console.log(payload);
+
+    const options = {
+      method: 'POST',
+      headers: {
+        Authorization: `${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    };
+
+    try {
+      setIsSaving(true);
+      const response = await fetch(url, options);
+      if (!response.ok) throw new Error(response.message);
+      const { records } = await response.json();
+      const savedTodo = {
+        id: records[0].fields.id,
+        ...records[0].fields,
+      };
+      if (!records[0].fields.isCompleted) {
+        savedTodo.isCompleted = false;
+      }
+      setTodoList([...todoList, savedTodo]);
+    } catch (error) {
+      console.error(error);
+      setErrorMessage(error.message);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const completeTodo = (todoID) => {
@@ -82,7 +124,7 @@ function App() {
   return (
     <div>
       <h1>My Todos</h1>
-      <TodoForm onAddTodo={addTodo} />
+      <TodoForm onAddTodo={addTodo} isSaving={isSaving} />
       <TodoList
         todoList={todoList}
         onCompleteTodo={completeTodo}
