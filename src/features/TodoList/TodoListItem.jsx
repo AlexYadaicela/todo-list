@@ -21,6 +21,10 @@ function TodoListItem({ todo, onCompleteTodo, onUpdateTodo }) {
     setIsEditing(false);
   };
 
+  React.useEffect(() => {
+    setWorkingTitle(todo.title);
+  }, [todo]);
+
   return (
     <li>
       <form onSubmit={handleUpdate}>
