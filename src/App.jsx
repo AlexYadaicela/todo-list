@@ -69,6 +69,15 @@ function App() {
   const completeTodo = async (todoID) => {
     const originalTodo = todoList.find((todo) => todo.id === todoID);
 
+    const updatedTodos = todoList.map((todo) => {
+      if (todo.id === todoID) {
+        return { ...todo, isCompleted: true };
+      }
+      return todo;
+    });
+
+    setTodoList(updatedTodos);
+
     const payload = {
       records: [
         {
@@ -89,15 +98,6 @@ function App() {
       body: JSON.stringify(payload),
     };
 
-    const updatedTodos = todoList.map((todo) => {
-      if (todo.id === todoID) {
-        return { ...todo, isCompleted: true };
-      }
-      return todo;
-    });
-
-    setTodoList(updatedTodos);
-
     try {
       const response = await fetch(url, options);
       if (!response.ok) throw new Error(`Reponse Status: ${response.status}`);
@@ -116,6 +116,15 @@ function App() {
 
   const updateTodo = async (editedTodo) => {
     const originalTodo = todoList.find((todo) => todo.id === editedTodo.id);
+
+    const updatedTodos = todoList.map((todo) => {
+      if (todo.id === editedTodo.id) {
+        return { ...editedTodo };
+      } else {
+        return todo;
+      }
+    });
+    setTodoList(updatedTodos);
 
     const payload = {
       records: [
@@ -145,20 +154,16 @@ function App() {
     } catch (error) {
       console.error(error.message);
       setErrorMessage(`${error.message}. Reverting todo...`);
-      const revertedTodos = [...todoList, originalTodo];
+      const revertedTodos = todoList.map((todo) => {
+        if (todo.id === originalTodo.id) {
+          return originalTodo;
+        }
+        return todo;
+      });
       setTodoList(revertedTodos);
     } finally {
       setIsSaving(false);
     }
-
-    const updatedTodos = todoList.map((todo) => {
-      if (todo.id === editedTodo.id) {
-        return { ...editedTodo };
-      } else {
-        return todo;
-      }
-    });
-    setTodoList(updatedTodos);
   };
 
   React.useEffect(() => {
