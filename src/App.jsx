@@ -104,7 +104,12 @@ function App() {
     } catch (error) {
       console.error(error.message);
       setErrorMessage(`${error.message}. Reverting todo...`);
-      const revertedTodos = [...originalTodo];
+      const revertedTodos = todoList.map((todo) => {
+        if (todo.id === originalTodo.id) {
+          return originalTodo;
+        }
+        return todo;
+      });
       setTodoList(revertedTodos);
     }
   };
