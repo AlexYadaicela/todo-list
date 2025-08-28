@@ -12,6 +12,24 @@ function App() {
   const [todoList, setTodoList] = React.useState([]);
   const [isSaving, setIsSaving] = React.useState(false);
 
+  const fetchOptions = (reqType, payload) => {
+    return payload
+      ? {
+          method: reqType,
+          headers: {
+            Authorization: `${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        }
+      : {
+          method: reqType,
+          headers: {
+            Authorization: `${token}`,
+          },
+        };
+  };
+
   const addTodo = async (newTodo) => {
     console.log(newTodo);
 
@@ -29,13 +47,10 @@ function App() {
     console.log(payload);
 
     const options = {
-      method: 'POST',
-      headers: {
-        Authorization: `${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
+      ...fetchOptions('POST', payload),
     };
+
+    console.log(options);
 
     try {
       setIsSaving(true);
@@ -90,12 +105,7 @@ function App() {
     };
 
     const options = {
-      method: 'PATCH',
-      headers: {
-        Authorization: `${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
+      ...fetchOptions('PATCH', payload),
     };
 
     try {
@@ -139,12 +149,7 @@ function App() {
     };
 
     const options = {
-      method: 'PATCH',
-      headers: {
-        Authorization: `${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
+      ...fetchOptions('PATCH', payload),
     };
 
     try {
@@ -170,10 +175,7 @@ function App() {
     const fetchTodos = async () => {
       setIsLoading(true);
       const options = {
-        method: 'GET',
-        headers: {
-          Authorization: `${token}`,
-        },
+        ...fetchOptions('GET'),
       };
 
       try {
