@@ -110,7 +110,7 @@ function App() {
 
     try {
       const response = await fetch(url, options);
-      if (!response.ok) throw new Error(`Reponse Status: ${response.status}`);
+      if (!response.ok) throw new Error(`Response Status: ${response.status}`);
     } catch (error) {
       console.error(error.message);
       setErrorMessage(`${error.message}. Reverting todo...`);
