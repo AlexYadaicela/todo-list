@@ -8,7 +8,10 @@ function TodoForm({ onAddTodo, isSaving }) {
   const handleAddTodo = (event) => {
     console.log(workingTodoTitle);
     event.preventDefault();
-    onAddTodo(workingTodoTitle);
+    onAddTodo({
+      title: workingTodoTitle,
+      isCompleted: false,
+    });
     setWorkingTodo('');
     todoTitleInput.current.focus();
   };

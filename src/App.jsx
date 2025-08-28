@@ -19,8 +19,8 @@ function App() {
       records: [
         {
           fields: {
-            title: newTodo,
-            isCompleted: false,
+            title: newTodo.title,
+            isCompleted: newTodo.isCompleted,
           },
         },
       ],
@@ -39,16 +39,24 @@ function App() {
 
     try {
       setIsSaving(true);
+
       const response = await fetch(url, options);
-      if (!response.ok) throw new Error(`Response Status ${response.message}`);
+
+      if (!response.ok) {
+        throw new Error(`Response Status: ${response.message}`);
+      }
+
       const { records } = await response.json();
+
       const savedTodo = {
-        id: records[0].fields.id,
+        id: records[0].id,
         ...records[0].fields,
       };
+
       if (!records[0].fields.isCompleted) {
         savedTodo.isCompleted = false;
       }
+
       setTodoList([...todoList, savedTodo]);
     } catch (error) {
       console.error(error);
