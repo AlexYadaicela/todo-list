@@ -43,7 +43,7 @@ function App() {
       const response = await fetch(url, options);
 
       if (!response.ok) {
-        throw new Error(`Response Status: ${response.message}`);
+        throw new Error(`Response Status: ${response.status}`);
       }
 
       const { records } = await response.json();
@@ -104,7 +104,7 @@ function App() {
     } catch (error) {
       console.error(error.message);
       setErrorMessage(`${error.message}. Reverting todo...`);
-      const revertedTodos = [...updatedTodos, originalTodo];
+      const revertedTodos = [...originalTodo];
       setTodoList(revertedTodos);
     }
   };
