@@ -6,9 +6,13 @@ import * as React from 'react';
 
 const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
 
-const encodeURL = ({ sortDirection, sortField }) => {
+const encodeURL = ({ sortDirection, sortField, queryString }) => {
+  let searchQuery = '';
+  if (queryString) {
+    searchQuery = `&filterByFormula=SEARCH("${queryString}",+title)`;
+  }
   let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
-  return encodeURI(`${url}?${sortQuery}`);
+  return encodeURI(`${url}?${sortQuery}${searchQuery}`);
 };
 
 function App() {
@@ -20,6 +24,7 @@ function App() {
   const [isSaving, setIsSaving] = React.useState(false);
   const [sortField, setSortField] = React.useState('createdTime');
   const [sortDirection, setSortDirection] = React.useState('desc');
+  const [queryString, setQueryString] = React.useState('');
 
   const fetchOptions = (reqType, payload) => {
     return payload
@@ -65,7 +70,7 @@ function App() {
       setIsSaving(true);
 
       const response = await fetch(
-        encodeURL({ sortDirection, sortField }),
+        encodeURL({ sortDirection, sortField, queryString }),
         options
       );
 
@@ -122,7 +127,7 @@ function App() {
 
     try {
       const response = await fetch(
-        encodeURL({ sortDirection, sortField }),
+        encodeURL({ sortDirection, sortField, queryString }),
         options
       );
       if (!response.ok) throw new Error(`Response Status: ${response.status}`);
@@ -170,7 +175,7 @@ function App() {
     try {
       setIsSaving(true);
       const response = await fetch(
-        encodeURL({ sortDirection, sortField }),
+        encodeURL({ sortDirection, sortField, queryString }),
         options
       );
       if (!response.ok) throw new Error(`Response Status ${response.status}`);
@@ -198,7 +203,7 @@ function App() {
 
       try {
         const response = await fetch(
-          encodeURL({ sortDirection, sortField }),
+          encodeURL({ sortDirection, sortField, queryString }),
           options
         );
         if (!response.ok) {
@@ -227,7 +232,7 @@ function App() {
     };
 
     fetchTodos();
-  }, [sortDirection, sortField]);
+  }, [sortDirection, sortField, queryString]);
 
   return (
     <div>
@@ -242,7 +247,10 @@ function App() {
       <hr />
       <TodosViewForm
         sortDirection={setSortDirection}
-        sortField={setSortField}
+        sortField={sortField}
+        setSortField={setSortField}
+        queryString={queryString}
+        setQueryString={setQueryString}
       />
       {errorMessage && (
         <div>

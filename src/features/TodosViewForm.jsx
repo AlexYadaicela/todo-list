@@ -1,17 +1,34 @@
-function TodosViewForm({ sortDirection, sortField }) {
+function TodosViewForm({
+  sortDirection,
+  sortField,
+  setSortField,
+  queryString,
+  setQueryString,
+}) {
   const preventRefresh = (e) => {
     e.preventDeafult();
   };
   return (
     <form onSubmit={preventRefresh}>
       <div>
+        <label htmlFor="search">Search todos:</label>
+        <input
+          type="text"
+          id="search"
+          value={queryString}
+          onChange={(e) => {
+            setQueryString(e.target.value);
+          }}
+        />
+      </div>
+      <div>
         <label htmlFor="sortBy">Sort by</label>
         <select
           name=""
           id="sortBy"
-          //   value={sortField}
+          value={sortField}
           onChange={(e) => {
-            sortField(e.target.value);
+            setSortField(e.target.value);
           }}
         >
           <option value="title">Title</option>
