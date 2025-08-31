@@ -20,6 +20,14 @@ function TodosViewForm({
             setQueryString(e.target.value);
           }}
         />
+        <button
+          type="button"
+          onClick={() => {
+            setQueryString('');
+          }}
+        >
+          Clear
+        </button>
       </div>
       <div>
         <label htmlFor="sortBy">Sort by</label>
