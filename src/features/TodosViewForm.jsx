@@ -10,7 +10,7 @@ function TodosViewForm({
   const [localQueryString, setLocalQueryString] = useState(queryString);
 
   const preventRefresh = (e) => {
-    e.preventDeafult();
+    e.preventDefault();
   };
 
   useEffect(() => {

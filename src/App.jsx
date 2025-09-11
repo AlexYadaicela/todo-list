@@ -17,7 +17,7 @@ function App() {
   const [sortDirection, setSortDirection] = useState('desc');
   const [queryString, setQueryString] = useState('');
 
-  const encodeURL = useCallback(() => {
+  const encodeUrl = useCallback(() => {
     let searchQuery = '';
     if (queryString) {
       searchQuery = `&filterByFormula=SEARCH("${queryString}",+title)`;
@@ -69,7 +69,7 @@ function App() {
     try {
       setIsSaving(true);
 
-      const response = await fetch(encodeURL(), options);
+      const response = await fetch(encodeUrl(), options);
 
       if (!response.ok) {
         throw new Error(`Response Status: ${response.status}`);
@@ -123,7 +123,7 @@ function App() {
     };
 
     try {
-      const response = await fetch(encodeURL(), options);
+      const response = await fetch(encodeUrl(), options);
       if (!response.ok) throw new Error(`Response Status: ${response.status}`);
     } catch (error) {
       console.error(error.message);
@@ -168,7 +168,7 @@ function App() {
 
     try {
       setIsSaving(true);
-      const response = await fetch(encodeURL(), options);
+      const response = await fetch(encodeUrl(), options);
       if (!response.ok) throw new Error(`Response Status ${response.status}`);
     } catch (error) {
       console.error(error.message);
@@ -193,7 +193,7 @@ function App() {
       };
 
       try {
-        const response = await fetch(encodeURL(), options);
+        const response = await fetch(encodeUrl(), options);
         if (!response.ok) {
           throw new Error(`Response status: ${response.status}`);
         }
