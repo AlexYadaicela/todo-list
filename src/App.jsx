@@ -6,15 +6,6 @@ import * as React from 'react';
 
 const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
 
-const encodeURL = ({ sortDirection, sortField, queryString }) => {
-  let searchQuery = '';
-  if (queryString) {
-    searchQuery = `&filterByFormula=SEARCH("${queryString}",+title)`;
-  }
-  let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
-  return encodeURI(`${url}?${sortQuery}${searchQuery}`);
-};
-
 function App() {
   const token = `Bearer ${import.meta.env.VITE_PAT}`;
 
@@ -25,6 +16,15 @@ function App() {
   const [sortField, setSortField] = React.useState('createdTime');
   const [sortDirection, setSortDirection] = React.useState('desc');
   const [queryString, setQueryString] = React.useState('');
+
+  const encodeURL = React.useCallback(() => {
+    let searchQuery = '';
+    if (queryString) {
+      searchQuery = `&filterByFormula=SEARCH("${queryString}",+title)`;
+    }
+    let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
+    return encodeURI(`${url}?${sortQuery}${searchQuery}`);
+  }, [queryString, sortDirection, sortField]);
 
   const fetchOptions = (reqType, payload) => {
     return payload
@@ -69,10 +69,7 @@ function App() {
     try {
       setIsSaving(true);
 
-      const response = await fetch(
-        encodeURL({ sortDirection, sortField, queryString }),
-        options
-      );
+      const response = await fetch(encodeURL(), options);
 
       if (!response.ok) {
         throw new Error(`Response Status: ${response.status}`);
@@ -126,10 +123,7 @@ function App() {
     };
 
     try {
-      const response = await fetch(
-        encodeURL({ sortDirection, sortField, queryString }),
-        options
-      );
+      const response = await fetch(encodeURL(), options);
       if (!response.ok) throw new Error(`Response Status: ${response.status}`);
     } catch (error) {
       console.error(error.message);
@@ -174,10 +168,7 @@ function App() {
 
     try {
       setIsSaving(true);
-      const response = await fetch(
-        encodeURL({ sortDirection, sortField, queryString }),
-        options
-      );
+      const response = await fetch(encodeURL(), options);
       if (!response.ok) throw new Error(`Response Status ${response.status}`);
     } catch (error) {
       console.error(error.message);
@@ -202,10 +193,7 @@ function App() {
       };
 
       try {
-        const response = await fetch(
-          encodeURL({ sortDirection, sortField, queryString }),
-          options
-        );
+        const response = await fetch(encodeURL(), options);
         if (!response.ok) {
           throw new Error(`Response status: ${response.status}`);
         }
