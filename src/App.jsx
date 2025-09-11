@@ -234,7 +234,7 @@ function App() {
       />
       <hr />
       <TodosViewForm
-        sortDirection={setSortDirection}
+        setSortDirection={setSortDirection}
         sortField={sortField}
         setSortField={setSortField}
         queryString={queryString}
