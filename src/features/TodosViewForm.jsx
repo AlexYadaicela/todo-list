@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 function TodosViewForm({
-  sortDirection,
+  setSortDirection,
   sortField,
   setSortField,
   queryString,
@@ -63,7 +63,7 @@ function TodosViewForm({
           name=""
           id="sortDir"
           onChange={(e) => {
-            sortDirection(e.target.value);
+            setSortDirection(e.target.value);
           }}
         >
           <option value="asc">Ascending</option>
