@@ -2,22 +2,22 @@ import './App.css';
 import TodoList from './features/TodoList/TodoList';
 import TodoForm from './features/TodoForm';
 import TodosViewForm from './features/TodosViewForm';
-import * as React from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
 
 function App() {
   const token = `Bearer ${import.meta.env.VITE_PAT}`;
 
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState('');
-  const [todoList, setTodoList] = React.useState([]);
-  const [isSaving, setIsSaving] = React.useState(false);
-  const [sortField, setSortField] = React.useState('createdTime');
-  const [sortDirection, setSortDirection] = React.useState('desc');
-  const [queryString, setQueryString] = React.useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [todoList, setTodoList] = useState([]);
+  const [isSaving, setIsSaving] = useState(false);
+  const [sortField, setSortField] = useState('createdTime');
+  const [sortDirection, setSortDirection] = useState('desc');
+  const [queryString, setQueryString] = useState('');
 
-  const encodeURL = React.useCallback(() => {
+  const encodeURL = useCallback(() => {
     let searchQuery = '';
     if (queryString) {
       searchQuery = `&filterByFormula=SEARCH("${queryString}",+title)`;
@@ -185,7 +185,7 @@ function App() {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchTodos = async () => {
       setIsLoading(true);
       const options = {

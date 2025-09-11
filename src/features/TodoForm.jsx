@@ -1,9 +1,9 @@
-import * as React from 'react';
+import { useState, useRef } from 'react';
 import TextInputWithLabel from '../shared/TextInputWithLabel';
 
 function TodoForm({ onAddTodo, isSaving }) {
-  const [workingTodoTitle, setWorkingTodo] = React.useState('');
-  const todoTitleInput = React.useRef();
+  const [workingTodoTitle, setWorkingTodo] = useState('');
+  const todoTitleInput = useRef();
 
   const handleAddTodo = (event) => {
     console.log(workingTodoTitle);
