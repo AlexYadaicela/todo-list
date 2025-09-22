@@ -4,7 +4,9 @@ import TextInputWithLabel from '../shared/TextInputWithLabel';
 
 function TodoForm({ onAddTodo, isSaving }) {
   const StyledButton = styled.button`
-    font-style: italic;
+    &:disabled {
+      font-style: italic;
+    }
   `;
   const StyledForm = styled.form`
     padding-block: 0.5rem;

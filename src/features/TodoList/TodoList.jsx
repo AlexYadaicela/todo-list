@@ -13,7 +13,7 @@ function TodoList({ todoList, onCompleteTodo, onUpdateTodo, isLoading }) {
           {filteredTodoList.length === 0 ? (
             <p>Add todo above to get started</p>
           ) : (
-            <ul>
+            <ul class={styles.ul}>
               {filteredTodoList.map((todo) => (
                 <TodoListItem
                   key={todo.id}
