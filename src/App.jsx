@@ -1,4 +1,5 @@
 import './App.css';
+import styles from './App.module.css';
 import TodoList from './features/TodoList/TodoList';
 import TodoForm from './features/TodoForm';
 import TodosViewForm from './features/TodosViewForm';
@@ -241,7 +242,7 @@ function App() {
         setQueryString={setQueryString}
       />
       {errorMessage && (
-        <div>
+        <div className={styles.error}>
           <hr />
           <p>{errorMessage}</p>
           <button type="button" onClick={() => setErrorMessage('')}>
