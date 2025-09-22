@@ -242,7 +242,7 @@ function App() {
         setQueryString={setQueryString}
       />
       {errorMessage && (
-        <div class={styles.error}>
+        <div className={styles.error}>
           <hr />
           <p>{errorMessage}</p>
           <button type="button" onClick={() => setErrorMessage('')}>
