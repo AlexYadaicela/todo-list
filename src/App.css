@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap');
+
+:root {
+  --primary-font: 'Oswald', sans-serif;
+  --fs-100: 0.785rem;
+  --bg-color: #f5efe6;
+
+  font-family: var(--primary-font);
+}
+
+body {
+  background-color: var(--bg-color);
+}
+
+button {
+  font-family: var(--primary-font);
+  background-color: white;
+  border: 0;
+  box-shadow: rgb(0, 0, 0) 5px 5px 1px;
+  transition: transform 150ms ease-in;
+  border-radius: 0.2rem;
+  width: 5rem;
+}
+
+button:not(:disabled):hover {
+  cursor: pointer;
+  transform: scale(1.1);
+}
