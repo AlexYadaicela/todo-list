@@ -2,15 +2,16 @@ import styled from 'styled-components';
 import { useState, useRef } from 'react';
 import TextInputWithLabel from '../shared/TextInputWithLabel';
 
+const StyledButton = styled.button`
+  &:disabled {
+    font-style: italic;
+  }
+`;
+const StyledForm = styled.form`
+  padding-block: 0.5rem;
+`;
+
 function TodoForm({ onAddTodo, isSaving }) {
-  const StyledButton = styled.button`
-    &:disabled {
-      font-style: italic;
-    }
-  `;
-  const StyledForm = styled.form`
-    padding-block: 0.5rem;
-  `;
   const [workingTodoTitle, setWorkingTodo] = useState('');
   const todoTitleInput = useRef();
 
