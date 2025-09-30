@@ -1,0 +1,8 @@
+body {
+  display: grid;
+  place-items: center;
+}
+
+.error {
+  border: 1px solid red;
+}
