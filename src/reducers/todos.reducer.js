@@ -23,6 +23,7 @@ function reducer(state = initialState, action) {
     case actions.fetchTodos:
       return {
         ...state,
+        isLoading: true,
       };
     case actions.loadTodos:
       return {
@@ -31,34 +32,88 @@ function reducer(state = initialState, action) {
     case actions.setLoadError:
       return {
         ...state,
+        errorMessage: action.errorMessage,
+        isLoading: false,
       };
     case actions.startRequest:
       return {
         ...state,
+        isSaving: true,
       };
-    case actions.addTodo:
+    case actions.addTodo: {
+      const savedTodo = {
+        id: action.records[0].id,
+        ...action.records[0].fields,
+      };
+      //   if (!records[0].fields.isCompleted) {
+      //     savedTodo.isCompleted = false;
+      //   }
+      //   };
       return {
         ...state,
+        todoList: {
+          newArr: [...state.todoList, savedTodo],
+        },
+        isSaving: false,
       };
+    }
+
     case actions.endRequest:
       return {
         ...state,
+        isLoading: false,
+        isSaving: false,
       };
-    case actions.updateTodo:
+    case actions.updateTodo: {
+      const updatedTodos = todoList.map((todo) => {
+        if (todo.id === editedTodo.id) {
+          return { ...editedTodo };
+        } else {
+          return todo;
+        }
+      });
+
+      const updatedState = {
+        ...state,
+        ...updatedTodos,
+      };
       return {
         ...state,
+        updatedState,
       };
-    case actions.completeTodo:
+    }
+    case actions.completeTodo: {
+      const updatedTodos = todoList.map((todo) => {
+        if (action.todo.id === todoID) {
+          return { ...todo, isCompleted: true };
+        }
+        return todo;
+      });
       return {
         ...state,
+        todoList: {
+          ...updatedTodos,
+        },
       };
-    case actions.revertTodo:
+    }
+    case actions.revertTodo: {
+      const revertedTodos = todoList.map((todo) => {
+        if (action.todo.id === originalTodo.id) {
+          return originalTodo;
+        }
+        return todo;
+      });
       return {
         ...state,
+        todoList: {
+          ...revertedTodos,
+        },
       };
+    }
     case actions.clearError:
       return {
         ...state,
+        errorMessage: '',
       };
   }
 }

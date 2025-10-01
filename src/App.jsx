@@ -3,13 +3,21 @@ import styles from './App.module.css';
 import TodoList from './features/TodoList/TodoList';
 import TodoForm from './features/TodoForm';
 import TodosViewForm from './features/TodosViewForm';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useReducer } from 'react';
+import {
+  reducer as todosReducer,
+  actions as todoActions,
+  initialState as initialTodosState,
+} from './reducers/todos.reducer';
 
 const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
 
 function App() {
   const token = `Bearer ${import.meta.env.VITE_PAT}`;
 
+  const [todoState, dispatch] = useReducer(todosReducer, initialTodosState);
+
+  // this was moved to reducer file
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [todoList, setTodoList] = useState([]);
@@ -79,19 +87,28 @@ function App() {
 
       const { records } = await response.json();
 
-      const savedTodo = {
-        id: records[0].id,
-        ...records[0].fields,
-      };
+      // this was moved to reducer
+      // const savedTodo = {
+      //   id: records[0].id,
+      //   ...records[0].fields,
+      // };
 
-      if (!records[0].fields.isCompleted) {
-        savedTodo.isCompleted = false;
-      }
+      // if (!records[0].fields.isCompleted) {
+      //   savedTodo.isCompleted = false;
+      // }
 
-      setTodoList([...todoList, savedTodo]);
+      dispatch({
+        type: todoActions.setTodoList,
+        records,
+      });
+
+      // setTodoList([...todoList, savedTodo]);
     } catch (error) {
-      console.error(error);
-      setErrorMessage(error.message);
+      dispatch({
+        type: todoActions.setLoadError,
+        errorMessage: error.message,
+      });
+      // setErrorMessage(error.message);
     } finally {
       setIsSaving(false);
     }
@@ -100,6 +117,8 @@ function App() {
   const completeTodo = async (todoID) => {
     const originalTodo = todoList.find((todo) => todo.id === todoID);
 
+    // this was moved to reducer
+
     const updatedTodos = todoList.map((todo) => {
       if (todo.id === todoID) {
         return { ...todo, isCompleted: true };
@@ -107,7 +126,10 @@ function App() {
       return todo;
     });
 
-    setTodoList(updatedTodos);
+    dispatch({
+      type: todoActions.loadTodos,
+    });
+    setTodoList(action.id);
 
     const payload = {
       records: [
@@ -142,7 +164,7 @@ function App() {
 
   const updateTodo = async (editedTodo) => {
     const originalTodo = todoList.find((todo) => todo.id === editedTodo.id);
-
+    // this was moved to reducer
     const updatedTodos = todoList.map((todo) => {
       if (todo.id === editedTodo.id) {
         return { ...editedTodo };
@@ -150,7 +172,7 @@ function App() {
         return todo;
       }
     });
-    setTodoList(updatedTodos);
+    setTodoList(action.updatedTodos);
 
     const payload = {
       records: [
@@ -189,7 +211,8 @@ function App() {
 
   useEffect(() => {
     const fetchTodos = async () => {
-      setIsLoading(true);
+      dispatch({ type: todoActions.fetchTodos });
+      // setIsLoading(true);
       const options = {
         ...fetchOptions('GET'),
       };
@@ -201,23 +224,28 @@ function App() {
         }
         const { records } = await response.json();
         console.log(records);
-        setTodoList(
-          records.map((record) => {
-            const todo = {
-              id: record.id,
-              ...record.fields,
-            };
-            if (!todo.isCompleted) {
-              todo.isCompleted = false;
-            }
-            return todo;
-          })
-        );
+        // move into a todo
+        const todo = action.records.map((record) => {
+          const todo = {
+            todoList: todo,
+            isLoading: false,
+            id: record.id,
+            ...record.fields,
+          };
+          if (!todo.isCompleted) {
+            todo.isCompleted = false;
+          }
+          return todo;
+        });
+
+        setTodoList(todo);
       } catch (error) {
         setErrorMessage(error.message);
         console.error(error.message);
       } finally {
-        setIsLoading(false);
+        dispatch({
+          type: todoActions.fetchTodos,
+        });
       }
     };
 
