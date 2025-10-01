@@ -131,6 +131,7 @@ function App() {
       setErrorMessage(`${error.message}. Reverting todo...`);
       dispatch({
         type: todoActions.revertTodo,
+        todoList: todoState.todoList,
         originalTodo: originalTodo,
       });
     }
@@ -170,6 +171,7 @@ function App() {
       setErrorMessage(`${error.message}. Reverting todo...`);
       dispatch({
         type: todoActions.revertTodo,
+        todoList: todoState.todoList,
         originalTodo: originalTodo,
       });
     } finally {
@@ -201,7 +203,7 @@ function App() {
       } catch (error) {
         dispatch({
           type: todoActions.setLoadError,
-          error: error.message,
+          error: error,
         });
       } finally {
         setIsLoading(false);
