@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
+const StyledForm = styled.form`
+  padding-block: 0.5rem;
+`;
+
 function TodosViewForm({
   setSortDirection,
   sortField,
@@ -24,9 +28,6 @@ function TodosViewForm({
     };
   }, [localQueryString, setQueryString]);
 
-  const StyledForm = styled.form`
-    padding-block: 0.5rem;
-  `;
   return (
     <StyledForm onSubmit={preventRefresh}>
       <div>
