@@ -1,8 +1,7 @@
 import './App.css';
 import styles from './App.module.css';
-import TodoList from './features/TodoList/TodoList';
-import TodoForm from './features/TodoForm';
-import TodosViewForm from './features/TodosViewForm';
+// todoform, todolist, todoviewsform replaced with todospage component
+import TodosPage from './pages/TodosPage';
 import { useState, useCallback, useEffect, useReducer } from 'react';
 import {
   reducer as todosReducer,
@@ -88,7 +87,6 @@ function App() {
         type: todoActions.addTodo,
         records: records,
       });
-      // END: REFACTOR
     } catch (error) {
       console.error(error);
       setErrorMessage(error.message);
@@ -186,6 +184,7 @@ function App() {
       dispatch({
         type: todoActions.fetchTodos,
       });
+
       const options = {
         ...fetchOptions('GET'),
       };
@@ -195,6 +194,7 @@ function App() {
           throw new Error(`Response status: ${response.status}`);
         }
         const { records } = await response.json();
+        console.log(records);
         // use reducer
         dispatch({
           type: todoActions.loadTodos,
@@ -216,15 +216,12 @@ function App() {
   return (
     <div>
       <h1>My Todos</h1>
-      <TodoForm onAddTodo={addTodo} isSaving={todoState.isSaving} />
-      <TodoList
-        todoList={todoState.todoList}
-        onCompleteTodo={completeTodo}
-        onUpdateTodo={updateTodo}
-        isLoading={todoState.isLoading}
-      />
-      <hr />
-      <TodosViewForm
+      {/* replaced with component TodosPage */}
+      <TodosPage
+        addTodo={addTodo}
+        todoState={todoState}
+        completeTodo={completeTodo}
+        updateTodo={updateTodo}
         setSortDirection={setSortDirection}
         sortField={sortField}
         setSortField={setSortField}
