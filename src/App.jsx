@@ -1,6 +1,6 @@
 import './App.css';
 import styles from './App.module.css';
-// todoform, todolist, todoviewsform replaced with todospage component
+import Header from './shared/Header';
 import TodosPage from './pages/TodosPage';
 import { useState, useCallback, useEffect, useReducer } from 'react';
 import {
@@ -8,15 +8,33 @@ import {
   actions as todoActions,
   initialState as initialTodosState,
 } from './reducers/todos.reducer';
+import { Route, Routes, useLocation } from 'react-router';
 
 const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
 
+function usePageViews({ setTitle }) {
+  const location = useLocation();
+  useEffect(() => {
+    console.log(location.pathname);
+    switch (location.pathname) {
+      case '/':
+        setTitle('Todo List');
+        break;
+      case '/about':
+        setTitle('About');
+        break;
+      default:
+        setTitle('Not Found');
+    }
+  }, [location]);
+}
 function App() {
   const token = `Bearer ${import.meta.env.VITE_PAT}`;
 
   const [todoState, dispatch] = useReducer(todosReducer, initialTodosState);
 
   // START: REFACTOR
+  const [title, setTitle] = useState('My Todos');
   const [todoList, setTodoList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -213,21 +231,33 @@ function App() {
     fetchTodos();
   }, [sortDirection, sortField, queryString]);
 
+  usePageViews({ setTitle });
   return (
     <div>
-      <h1>My Todos</h1>
+      {/* replaced with component header */}
+      <Header title={title} />
       {/* replaced with component TodosPage */}
-      <TodosPage
-        addTodo={addTodo}
-        todoState={todoState}
-        completeTodo={completeTodo}
-        updateTodo={updateTodo}
-        setSortDirection={setSortDirection}
-        sortField={sortField}
-        setSortField={setSortField}
-        queryString={queryString}
-        setQueryString={setQueryString}
-      />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <TodosPage
+              addTodo={addTodo}
+              todoState={todoState}
+              completeTodo={completeTodo}
+              updateTodo={updateTodo}
+              setSortDirection={setSortDirection}
+              sortField={sortField}
+              setSortField={setSortField}
+              queryString={queryString}
+              setQueryString={setQueryString}
+            />
+          }
+        />
+        <Route path="/about" element={<h1>About</h1>} />
+        <Route path="/\/*" element={<h1>Not Found</h1>} />
+      </Routes>
+
       {todoState.errorMessage && (
         <div className={styles.error}>
           <hr />

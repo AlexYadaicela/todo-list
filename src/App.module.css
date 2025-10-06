@@ -1,6 +1,6 @@
 body {
   display: grid;
-  place-items: center;
+  /* place-items: center; */
 }
 
 .error {
