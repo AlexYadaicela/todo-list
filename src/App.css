@@ -3,12 +3,13 @@
 :root {
   --primary-font: 'Oswald', sans-serif;
   --fs-100: 0.785rem;
-  --bg-color: #f5efe6;
+  --bg-color: #f5f1dc;
 
   font-family: var(--primary-font);
 }
 
 body {
+  color: #334443;
   background-color: var(--bg-color);
 }
 
@@ -23,6 +24,7 @@ button {
 }
 
 button:not(:disabled):hover {
+  color: #334443;
   cursor: pointer;
   transform: scale(1.1);
 }

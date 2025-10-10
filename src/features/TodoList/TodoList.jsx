@@ -21,10 +21,10 @@ function TodoList({ todoList, onCompleteTodo, onUpdateTodo, isLoading }) {
 
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const itemsPerPage = 15;
+  const itemsPerPage = 7;
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
-  const indexOfFirstTodo = (currentPage - 1) * itemsPerPage;
-  console.log('this is printing', searchParams.get('page'));
+  const indexOfFirstTodo = currentPage * itemsPerPage - itemsPerPage;
+  console.log('this is printing', indexOfFirstTodo);
   const totalPages = Math.ceil(filteredTodoList.length / itemsPerPage);
 
   useEffect(() => {
@@ -34,6 +34,11 @@ function TodoList({ todoList, onCompleteTodo, onUpdateTodo, isLoading }) {
       }
     }
   }, [currentPage, totalPages, navigate]);
+
+  const currentEntries = filteredTodoList.slice(
+    indexOfFirstTodo,
+    currentPage * itemsPerPage
+  );
   return (
     <div>
       {isLoading ? (
@@ -45,7 +50,7 @@ function TodoList({ todoList, onCompleteTodo, onUpdateTodo, isLoading }) {
           ) : (
             <div>
               <ul className={styles.ul}>
-                {filteredTodoList.map((todo) => (
+                {currentEntries.map((todo) => (
                   <TodoListItem
                     key={todo.id}
                     todo={todo}

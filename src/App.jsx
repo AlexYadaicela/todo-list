@@ -245,7 +245,7 @@ function App() {
 
   usePageViews({ setTitle });
   return (
-    <div>
+    <div className={styles.main}>
       {/* replaced with component header */}
       <Header title={title} />
       {/* replaced with component TodosPage */}
