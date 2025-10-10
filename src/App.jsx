@@ -1,28 +1,40 @@
 import './App.css';
 import styles from './App.module.css';
-import TodoList from './features/TodoList/TodoList';
-import TodoForm from './features/TodoForm';
-import TodosViewForm from './features/TodosViewForm';
+import Header from './shared/Header';
+import TodosPage from './pages/TodosPage';
+import About from './pages/About';
+import NotFound from './pages/NotFound';
 import { useState, useCallback, useEffect, useReducer } from 'react';
 import {
   reducer as todosReducer,
   actions as todoActions,
   initialState as initialTodosState,
 } from './reducers/todos.reducer';
+import { Route, Routes, useLocation } from 'react-router';
 
 const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
 
+function usePageViews({ setTitle }) {
+  const location = useLocation();
+  useEffect(() => {
+    console.log(location.pathname);
+    switch (location.pathname) {
+      case '/':
+        setTitle('Todo List');
+        break;
+      case '/about':
+        setTitle('About');
+        break;
+      default:
+        setTitle('Not Found');
+    }
+  }, [location]);
+}
 function App() {
   const token = `Bearer ${import.meta.env.VITE_PAT}`;
 
   const [todoState, dispatch] = useReducer(todosReducer, initialTodosState);
-
-  // START: REFACTOR
-  const [todoList, setTodoList] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  // END: REFACTOR
+  const [title, setTitle] = useState('My Todos');
 
   const [sortField, setSortField] = useState('createdTime');
   const [sortDirection, setSortDirection] = useState('desc');
@@ -88,10 +100,12 @@ function App() {
         type: todoActions.addTodo,
         records: records,
       });
-      // END: REFACTOR
     } catch (error) {
       console.error(error);
-      setErrorMessage(error.message);
+      dispatch({
+        type: todoActions.setLoadError,
+        error: error,
+      });
     } finally {
       dispatch({
         type: todoActions.endRequest,
@@ -100,7 +114,7 @@ function App() {
   };
 
   const completeTodo = async (todoID) => {
-    const originalTodo = todoList.find((todo) => todo.id === todoID);
+    const originalTodo = todoState.todoList.find((todo) => todo.id === todoID);
 
     dispatch({
       type: todoActions.completeTodo,
@@ -128,7 +142,11 @@ function App() {
       if (!response.ok) throw new Error(`Response Status: ${response.status}`);
     } catch (error) {
       console.error(error.message);
-      setErrorMessage(`${error.message}. Reverting todo...`);
+      dispatch({
+        type: todoActions.setLoadError,
+        error: error,
+      });
+      // setErrorMessage(`${error.message}. Reverting todo...`);
       dispatch({
         type: todoActions.revertTodo,
         todoList: todoState.todoList,
@@ -138,7 +156,9 @@ function App() {
   };
 
   const updateTodo = async (editedTodo) => {
-    const originalTodo = todoList.find((todo) => todo.id === editedTodo.id);
+    const originalTodo = todoState.todoList.find(
+      (todo) => todo.id === editedTodo.id
+    );
 
     dispatch({
       type: todoActions.updateTodo,
@@ -163,19 +183,26 @@ function App() {
     };
 
     try {
-      setIsSaving(true);
+      dispatch({
+        type: todoActions.startRequest,
+      });
       const response = await fetch(encodeUrl(), options);
       if (!response.ok) throw new Error(`Response Status ${response.status}`);
     } catch (error) {
       console.error(error.message);
-      setErrorMessage(`${error.message}. Reverting todo...`);
+      dispatch({
+        type: todoActions.setLoadError,
+        error: error,
+      });
       dispatch({
         type: todoActions.revertTodo,
         todoList: todoState.todoList,
         originalTodo: originalTodo,
       });
     } finally {
-      setIsSaving(false);
+      dispatch({
+        type: todoActions.endRequest,
+      });
     }
   };
 
@@ -186,6 +213,7 @@ function App() {
       dispatch({
         type: todoActions.fetchTodos,
       });
+
       const options = {
         ...fetchOptions('GET'),
       };
@@ -206,31 +234,42 @@ function App() {
           error: error,
         });
       } finally {
-        setIsLoading(false);
+        dispatch({
+          type: todoActions.endRequest,
+        });
       }
     };
 
     fetchTodos();
   }, [sortDirection, sortField, queryString]);
 
+  usePageViews({ setTitle });
   return (
-    <div>
-      <h1>My Todos</h1>
-      <TodoForm onAddTodo={addTodo} isSaving={todoState.isSaving} />
-      <TodoList
-        todoList={todoState.todoList}
-        onCompleteTodo={completeTodo}
-        onUpdateTodo={updateTodo}
-        isLoading={todoState.isLoading}
-      />
-      <hr />
-      <TodosViewForm
-        setSortDirection={setSortDirection}
-        sortField={sortField}
-        setSortField={setSortField}
-        queryString={queryString}
-        setQueryString={setQueryString}
-      />
+    <div className={styles.main}>
+      {/* replaced with component header */}
+      <Header title={title} />
+      {/* replaced with component TodosPage */}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <TodosPage
+              addTodo={addTodo}
+              todoState={todoState}
+              completeTodo={completeTodo}
+              updateTodo={updateTodo}
+              setSortDirection={setSortDirection}
+              sortField={sortField}
+              setSortField={setSortField}
+              queryString={queryString}
+              setQueryString={setQueryString}
+            />
+          }
+        />
+        <Route path="/about" element={<About />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+
       {todoState.errorMessage && (
         <div className={styles.error}>
           <hr />

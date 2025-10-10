@@ -1,8 +1,8 @@
-body {
-  display: grid;
-  place-items: center;
-}
-
 .error {
   border: 1px solid red;
+}
+
+.main {
+  max-width: 30rem;
+  margin-inline: auto;
 }

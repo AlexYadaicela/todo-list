@@ -1,3 +1,7 @@
 li {
   padding-block-end: 0.5rem;
 }
+
+li:hover {
+  background-color: #dddad0;
+}
