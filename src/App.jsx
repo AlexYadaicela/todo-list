@@ -34,14 +34,7 @@ function App() {
   const token = `Bearer ${import.meta.env.VITE_PAT}`;
 
   const [todoState, dispatch] = useReducer(todosReducer, initialTodosState);
-
-  // START: REFACTOR
   const [title, setTitle] = useState('My Todos');
-  const [todoList, setTodoList] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  // END: REFACTOR
 
   const [sortField, setSortField] = useState('createdTime');
   const [sortDirection, setSortDirection] = useState('desc');
@@ -109,7 +102,10 @@ function App() {
       });
     } catch (error) {
       console.error(error);
-      setErrorMessage(error.message);
+      dispatch({
+        type: todoActions.setLoadError,
+        error: error,
+      });
     } finally {
       dispatch({
         type: todoActions.endRequest,
@@ -118,7 +114,7 @@ function App() {
   };
 
   const completeTodo = async (todoID) => {
-    const originalTodo = todoList.find((todo) => todo.id === todoID);
+    const originalTodo = todoState.todoList.find((todo) => todo.id === todoID);
 
     dispatch({
       type: todoActions.completeTodo,
@@ -146,7 +142,11 @@ function App() {
       if (!response.ok) throw new Error(`Response Status: ${response.status}`);
     } catch (error) {
       console.error(error.message);
-      setErrorMessage(`${error.message}. Reverting todo...`);
+      dispatch({
+        type: todoActions.setLoadError,
+        error: error,
+      });
+      // setErrorMessage(`${error.message}. Reverting todo...`);
       dispatch({
         type: todoActions.revertTodo,
         todoList: todoState.todoList,
@@ -156,7 +156,9 @@ function App() {
   };
 
   const updateTodo = async (editedTodo) => {
-    const originalTodo = todoList.find((todo) => todo.id === editedTodo.id);
+    const originalTodo = todoState.todoList.find(
+      (todo) => todo.id === editedTodo.id
+    );
 
     dispatch({
       type: todoActions.updateTodo,
@@ -181,19 +183,26 @@ function App() {
     };
 
     try {
-      setIsSaving(true);
+      dispatch({
+        type: todoActions.startRequest,
+      });
       const response = await fetch(encodeUrl(), options);
       if (!response.ok) throw new Error(`Response Status ${response.status}`);
     } catch (error) {
       console.error(error.message);
-      setErrorMessage(`${error.message}. Reverting todo...`);
+      dispatch({
+        type: todoActions.setLoadError,
+        error: error,
+      });
       dispatch({
         type: todoActions.revertTodo,
         todoList: todoState.todoList,
         originalTodo: originalTodo,
       });
     } finally {
-      setIsSaving(false);
+      dispatch({
+        type: todoActions.endRequest,
+      });
     }
   };
 
@@ -214,7 +223,6 @@ function App() {
           throw new Error(`Response status: ${response.status}`);
         }
         const { records } = await response.json();
-        console.log(records);
         // use reducer
         dispatch({
           type: todoActions.loadTodos,
@@ -226,7 +234,9 @@ function App() {
           error: error,
         });
       } finally {
-        setIsLoading(false);
+        dispatch({
+          type: todoActions.endRequest,
+        });
       }
     };
 
