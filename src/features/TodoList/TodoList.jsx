@@ -21,7 +21,7 @@ function TodoList({ todoList, onCompleteTodo, onUpdateTodo, isLoading }) {
 
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const itemsPerPage = 7;
+  const itemsPerPage = 15;
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
   const indexOfFirstTodo = currentPage * itemsPerPage - itemsPerPage;
   console.log('this is printing', indexOfFirstTodo);
